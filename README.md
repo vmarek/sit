@@ -1,2 +1,2 @@
 # sit
-testovacie repo pre SIT zadanie
+Testovacie repo pre SIT zadanie.
