@@ -1,0 +1,41 @@
+- hosts: localhost
+  user: test
+  sudo: yes
+  vars:
+    http_port: 8080
+    iname: webserver_image
+    cname: webserver01
+  tasks:
+   - name: Install apt-transport-https
+     become: yes
+     apt:
+        state: latest
+        name:
+        - apt-transport-https
+   - name: Install ca-certificates
+     become: yes
+     apt:
+        state: latest
+        name:
+        - ca-certificates
+   - name: Install curl
+     become: yes
+     apt:
+        state: latest
+        name:
+        - curl
+
+   - name: Install gnupg
+     become: yes
+     apt:
+        state: latest
+        name:
+        - gnupg
+
+   - name: Install lsb-release
+     become: yes
+     apt:
+        state: latest
+        name:
+        - lsb-release
+
