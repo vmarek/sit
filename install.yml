@@ -27,6 +27,7 @@
          - docker-ce
          - docker-ce-cli
          - containerd.io
+      update_cache: yes
 
 
 #  kopirovanie potrebnych suborov
