@@ -1,41 +1,44 @@
-- hosts: localhost
-  user: test
-  sudo: yes
-  vars:
-    http_port: 8080
-    iname: webserver_image
-    cname: webserver01
+---
+- hosts: webservers
+  vars_files:
+    - nastavenia.yml
+  become: true
   tasks:
-   - name: Install apt-transport-https
-     become: yes
-     apt:
-        state: latest
-        name:
-        - apt-transport-https
-   - name: Install ca-certificates
-     become: yes
-     apt:
-        state: latest
-        name:
-        - ca-certificates
-   - name: Install curl
-     become: yes
-     apt:
-        state: latest
-        name:
-        - curl
+  - name: instalacia zavislosti 
+    apt:
+      name: 
+         - ca-certificates
+         - apt-transport-https
+         - gnupg
+         - curl
+         - lsb-release
+      update_cache: yes
 
-   - name: Install gnupg
-     become: yes
-     apt:
-        state: latest
-        name:
-        - gnupg
+  - name: pridanie kluca
+    shell:  curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-   - name: Install lsb-release
-     become: yes
-     apt:
-        state: latest
-        name:
-        - lsb-release
+  - name: pridanie repozitara docker
+    shell: echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+  - name: instalacia docker-a 
+    apt:
+      name: 
+         - docker-ce
+         - docker-ce-cli
+         - containerd.io
+
+
+#  kopirovanie potrebnych suborov
+  - copy:
+      src: docker/
+      dest: docker/
+
+ 
+
+  - name: vytvorenie obrazu
+    shell: "cd docker && docker build -t {{ image_name }} ."
+
+  - name: vytvorenie kontajnera
+    shell: "docker run -dit --name {{ container_name }} -p {{ host_port }}:80 {{ image_name }}"
 
